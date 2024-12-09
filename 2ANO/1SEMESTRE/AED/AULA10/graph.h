@@ -23,7 +23,8 @@ class Graph {
 	
   struct Node {
     std::list<Edge> adj; // The list of outgoing edges (to adjacent nodes)
-    bool visited;        // Has the node been visited in a graph traversal?
+    bool visited; 
+    int distance;       // Has the node been visited in a graph traversal?
   };
 	
   int n;                   // Graph size (vertices are numbered from 1 to n)
@@ -103,6 +104,7 @@ public:
     }
   }
   
+  
   // --------------------------------------------------------------
 
   // ---------------------------------------------------------
@@ -143,6 +145,52 @@ public:
         nrCC(w);
     }
   }
+
+    //aed058
+    int distance(int a, int b) { 
+        if(a == b) return 0;
+
+        for(int i = 1; i <= n; i++) {
+            nodes[i].visited = false;
+            nodes[i].distance = 0;
+        }
+
+        std::queue<int> q;
+        q.push(a);
+        nodes[a].visited = true;
+        while(!q.empty()){
+            int u = q.front();
+            q.pop();
+
+            for(auto& e : nodes[u].adj){
+                int w = e.dest;
+                if(!nodes[w].visited){
+                    q.push(w);
+                    nodes[w].visited = true,
+                    nodes[w].distance = nodes[u].distance +1;
+                    if(w == b){
+                        return nodes[w].distance;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+    //aed059
+    int diameter() {
+        int res = 0;
+        int dist = 0;
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j <= n; j++) {
+                if(i != j) {
+                    dist = distance(i, j);
+                }
+                res = std::max(res, dist);
+            }
+        }
+        return res;
+    }
 
 };
 

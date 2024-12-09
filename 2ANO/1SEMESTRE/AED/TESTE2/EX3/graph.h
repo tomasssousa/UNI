@@ -1,5 +1,9 @@
 // -------------------------------------------------------------
 // Algorithms and Data Structures 2024/2025 - LEIC (FCUP/FEUP)
+// http://www.dcc.// -------------------------------------------------------------
+// Algorithms and Data Structures 2024/2025 - LEIC (FCUP/FEUP)
+// http://www.dcc.fc.up.pt/~pr// -------------------------------------------------------------
+// Algorithms and Data Structures 2024/2025 - LEIC (FCUP/FEUP)
 // http://www.dcc.fc.up.pt/~pribeiro/aulas/aed2425/
 // -------------------------------------------------------------
 // A simple lightweight graph class
@@ -17,32 +21,32 @@
 
 class Graph {
   struct Edge {
-    int dest;   // Destination node 
+    int dest;   // Destination node
     int weight; // An integer weight
   };
-	
+
   struct Node {
     std::list<Edge> adj; // The list of outgoing edges (to adjacent nodes)
     bool visited;        // Has the node been visited in a graph traversal?
   };
-	
+
   int n;                   // Graph size (vertices are numbered from 1 to n)
   bool hasDir;             // false: undirected; true: directed
   std::vector<Node> nodes; // The list of nodes being represented
-	
-public:  
+
+public:
   // Constructor: nr nodes and direction (default: undirected)
   Graph(int num, bool dir = false) : n(num), hasDir(dir), nodes(num+1) {}
-  
+
   // Add edge from source to destination with a certain weight
   void addEdge(int src, int dest, int weight = 1) {
     if (src<1 || src>n || dest<1 || dest>n) return;
     nodes[src].adj.push_back({dest, weight});
     if (!hasDir) nodes[dest].adj.push_back({src, weight});
   }
-  
+
   // --------------------------------------------------------------
-  
+
   // Read a graph in the format:
   // nr_nodes directed/undirected weighted/unweighted
   // nr_edges
@@ -53,10 +57,10 @@ public:
   static Graph *readGraph() {
     int n;
     std::string sdirection, sweight;
-    std::cin >> n >> sdirection >> sweight;  
+    std::cin >> n >> sdirection >> sweight;
     bool directed = (sdirection == "directed")?true:false;
     bool weighted = (sweight == "weighted")?true:false;
-  
+
     Graph *g = new Graph(n, directed);
     int e;
     std::cin >> e;
@@ -81,7 +85,7 @@ public:
         dfs(w);
     }
   }
-  
+
   // --------------------------------------------------------------
   // Breadth-First Search (BFS): example implementation
   // --------------------------------------------------------------
@@ -91,7 +95,7 @@ public:
     q.push(v);
     nodes[v].visited = true;
     while (!q.empty()) { // while there are still unvisited nodes
-      int u = q.front(); q.pop();      
+      int u = q.front(); q.pop();
       std::cout << u << " ";  // show node order
       for (auto e : nodes[u].adj) {
         int w = e.dest;
@@ -102,46 +106,155 @@ public:
       }
     }
   }
-  
-  // --------------------------------------------------------------
 
+
+  // --------------------------------------------------------------
   // ---------------------------------------------------------
   // TODO: put the functions you need to implement below this
   // ---------------------------------------------------------
 
-  int outDegree(int v) {
-    return nodes[v].adj.size();
-  }
-  
-  int weightedOutDegree(int v){
-    int result = 0;
-    for(auto i: nodes[v].adj) {
-      result += i.weight;
-    }
-    return result;
-  }
 
+  // AED051
   int nrConnectedComponents() {
-    int nr = -1;
-    for(int v = 0; v <= n; v++) {
-      nodes[v].visited = false;
+    int count = 0;
+    for (int i = 1; i <= n; i++) {
+      nodes[i].visited = false;
     }
-    for(int v = 0; v <= n; v++) {
-      if(!nodes[v].visited) {
-        nr++;
-        nrCC(v);
+    for (int i = 1; i <= n; i++) {
+      if (!nodes[i].visited) {
+        count++;
+        exploreComponent(i);
       }
     }
-    return nr;
+    return count;
   }
 
-  void nrCC(int v) {
+  void exploreComponent(int v) {
     nodes[v].visited = true;
     for (auto e : nodes[v].adj) {
       int w = e.dest;
-      if (!nodes[w].visited)
-        nrCC(w);
+      if (!nodes[w].visited) {
+        exploreComponent(w);
+      }
     }
+  }
+
+
+  // AED052
+  int largestComponent() {
+    int largest = 0;
+    for (int i = 1; i <= n; i++) {
+      nodes[i].visited = false;
+    }
+    for (int i = 1; i <= n; i++) {
+      if (!nodes[i].visited) {
+        int size = exploreComponentSize(i);
+        largest = std::max(largest, size);
+      }
+    }
+    return largest;
+  }
+
+  int exploreComponentSize(int v) {
+    nodes[v].visited = true;
+    int size = 1;
+    for (auto e : nodes[v].adj) {
+      int w = e.dest;
+      if(!nodes[w].visited) {
+        size += exploreComponentSize(w);
+      }
+    }
+    return size;
+  }
+
+
+  // AED053
+  std::list<int> topologicalSorting() {
+    std::vector<int> indegree(n + 1, 0);
+    std::list<int> order;
+    std::queue<int> q;
+
+    for (int i = 1; i <= n; i++) {
+        for (auto e : nodes[i].adj) {
+            indegree[e.dest]++;
+        }
+    }
+
+    for (int i = 1; i <= n; i++) {
+        if (indegree[i] == 0) {
+            q.push(i);
+        }
+    }
+
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        order.push_back(v);
+
+        for (auto e : nodes[v].adj) {
+            int w = e.dest;
+            indegree[w]--;
+            if (indegree[w] == 0) {
+                q.push(w);
+            }
+        }
+    }
+
+    return order;
+  }
+
+
+  // AED054
+  bool hasCycle() {
+    std::vector<int> state(n + 1, 0);
+    for (int i = 1; i <= n; i++) {
+        if (state[i] == 0) {
+            if (dfsCycle(i, state)) {
+                return true;
+            }
+        }
+    }
+    return false;
+  }
+
+  bool dfsCycle(int v, std::vector<int>& state) {
+    state[v] = 1;
+    for (auto e : nodes[v].adj) {
+        int w = e.dest;
+        if (state[w] == 1) {
+            return true;
+        }
+        if (state[w] == 0) {
+            if (dfsCycle(w, state)) {
+                return true;
+            }
+        }
+    }
+    state[v] = 2;
+    return false;
+  }
+
+
+  // AED055
+  bool isBipartite() {
+    std::vector<int> color(n + 1, -1);
+    std::queue<int> q;
+    q.push(1);
+    color[1] = 0;
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        for (auto e : nodes[v].adj) {
+            int w = e.dest;
+            if (color[w] == -1) {
+                color[w] = 1 - color[v];
+                q.push(w);
+            } else if (color[w] == color[v]) {
+                return false;
+            }
+        }
+    }
+    return true;
   }
 
 };
