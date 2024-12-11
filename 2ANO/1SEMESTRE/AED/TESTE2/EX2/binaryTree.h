@@ -210,15 +210,16 @@ public:
   // ---------------------------------------------------------
 
   // AED032
-  int numberLeafs() {
+  int numberLeafs(){
     return numberLeafs(root);
   }
 
   int numberLeafs(Node *n) {
     if (n == nullptr) return 0;
     else if (n->left == nullptr && n->right == nullptr) return 1;
-    else {return numberLeafs(n->left) + numberLeafs(n->right);}
+    else return numberLeafs(n->left) + numberLeafs(n->right);
   }
+
 
   // AED033
   bool strict() {
@@ -226,21 +227,22 @@ public:
   }
 
   bool strict(Node *n) {
-    if (n == nullptr) return true;
-    else if (n->left == nullptr && n->right == nullptr) return true;
-    else if ((n->left != nullptr && n->right == nullptr) || (n->left == nullptr && n->right != nullptr)) return false;
-    else {return strict(n->left) && strict(n->right);}
+    if (n == nullptr) return false;
+    else if ((n->left == nullptr) && (n->right == nullptr)) return true;
+    else if ((n->left == nullptr && n->right != nullptr) || (n->left != nullptr && n->right == nullptr)) return false;
+    else return strict(n->left) && strict(n->right);
   }
 
   // AED034
-  T& path(std::string& s) {
-    return fpath(root, s);
+  T & path(std::string s) {
+    return path(root, s);
   }
 
-  T& fpath(Node* n, std::string& s) {
-    if (s.empty() || s[0] == '_') return n->value;
-    else if (s[0] == 'L') return fpath(n->left, s.substr(1));
-    else return fpath(n->right, s.substr(1));
+  T & path(Node *n, std::string s) {
+    if (s[0] == '_') return n->value;
+    else if (s[0] == 'R') return path(n->right, s.substr(1));
+    else if (s[0] == 'L') return path(n->left, s.substr(1));
+    else return n->value;
   }
 
   // AED035
@@ -248,10 +250,13 @@ public:
     return nodesLevel(root, k, 0);
   }
 
-  int nodesLevel(Node* n, int k, int currentLevel) {
+  int nodesLevel(Node *n, int k, int currentLevel) {
     if (n == nullptr) return 0;
-    if (currentLevel == k) return 1;
-    return nodesLevel(n->left, k, currentLevel + 1) + nodesLevel(n->right, k, currentLevel + 1);
+    if(k == currentLevel) return 1;
+    else {
+      currentLevel++;
+    }
+    return nodesLevel(n->right, k, currentLevel) + nodesLevel(n->left, k, currentLevel);
   }
 
   // AED036
@@ -261,8 +266,9 @@ public:
 
   int countEven(Node* n) {
     if (n == nullptr) return 0;
-    int count = (n->value % 2 == 0) ? 1 : 0;
-    return count + countEven(n->left) + countEven(n->right);
+    int count = 0;
+    if (n->value % 2 == 0) count = 1;
+    return count + countEven(n->right) + countEven(n->left);
   }
 
   // AED037

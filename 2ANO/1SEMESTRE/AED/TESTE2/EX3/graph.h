@@ -116,27 +116,7 @@ public:
 
   // AED051
   int nrConnectedComponents() {
-    int count = 0;
-    for (int i = 1; i <= n; i++) {
-      nodes[i].visited = false;
-    }
-    for (int i = 1; i <= n; i++) {
-      if (!nodes[i].visited) {
-        count++;
-        exploreComponent(i);
-      }
-    }
-    return count;
-  }
-
-  void exploreComponent(int v) {
-    nodes[v].visited = true;
-    for (auto e : nodes[v].adj) {
-      int w = e.dest;
-      if (!nodes[w].visited) {
-        exploreComponent(w);
-      }
-    }
+    
   }
 
 

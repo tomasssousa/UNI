@@ -278,80 +278,20 @@ public:
   }
 
 
-  //AED059
+  // AED059
   int diameter() {
-    if (!isConnected()) return -1;
-    int farthestNode = bfsFarthestNode(1);
-    return bfsLongestShortestPath(farthestNode);
-  }
-
-  bool isConnected() {
-    std::vector<bool> visited(n + 1, false);
-    std::queue<int> q;
-    q.push(1);
-    visited[1] = true;
-    int visitedCount = 0;
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-        visitedCount++;
-        for (auto e : nodes[v].adj) {
-            int w = e.dest;
-            if (!visited[w]) {
-                visited[w] = true;
-                q.push(w);
-            }
+    int maxDiameter = 0;
+    for (int i = 1; i <= n; i++) {
+      for (int j = 1; j <= n; j++) {
+        int dist = distance(i, j);
+        if (dist == -1) {
+          return -1;
         }
+        maxDiameter = std::max(maxDiameter, dist);
+      }
     }
-    return visitedCount == n;
+    return maxDiameter;
   }
-
-  int bfsFarthestNode(int start) {
-    std::vector<int> distance(n + 1, -1);
-    std::queue<int> q;
-    q.push(start);
-    distance[start] = 0;
-    int farthestNode = start;
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-        for (auto e : nodes[v].adj) {
-            int w = e.dest;
-            if (distance[w] == -1) {
-                distance[w] = distance[v] + 1;
-                q.push(w);
-                if (distance[w] > distance[farthestNode]) {
-                    farthestNode = w;
-                }
-            }
-        }
-    }
-    return farthestNode;
-  }
-
-  int bfsLongestShortestPath(int start) {
-    std::vector<int> distance(n + 1, -1);
-    std::queue<int> q;
-    q.push(start);
-    distance[start] = 0;
-    int maxDistance = 0;
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-        for (auto e : nodes[v].adj) {
-            int w = e.dest;
-            if (distance[w] == -1) {
-                distance[w] = distance[v] + 1;
-                q.push(w);
-                maxDistance = std::max(maxDistance, distance[w]);
-            }
-        }
-    }
-    return maxDistance;
-  }
-
-
-  // AED062
 
 
 

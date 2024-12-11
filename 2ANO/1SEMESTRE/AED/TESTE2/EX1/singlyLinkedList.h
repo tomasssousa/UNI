@@ -170,7 +170,7 @@ public:
   // AED020
   T & get(int pos) {
     Node<T> *cur = first;
-    for(int i=0; i<pos; i++) {
+    for (int i = 0; i < pos; i++) {
       cur = cur->getNext();
     }
     return cur->getValue();
@@ -178,30 +178,25 @@ public:
 
   // AED021
   int count(T & v){
-    Node<T> * current = first;
-    int count = 0;
-
-    while(current->getNext() != nullptr){
-      if(current->getValue() == v){
-        count++;
+    Node<T> *cur = first;
+    int c = 0;
+    while (cur != nullptr) {
+      if(cur->getValue() == v){
+        c++;
       }
-      current = current->getNext();
+      cur = cur->getNext();
     }
-    if(current->getValue() == v){
-      count++;
-    }
-
-    return count;
+    return c;
   }
 
   // AED022
   void remove(int pos) {
     Node<T> *cur = first;
-    if(pos > length - 1 || pos < 0) return;
+    if(pos < 0 || pos >= length) return;
     else if(pos == 0) removeFirst();
-    else if(pos == length - 1) removeLast();
+    else if(pos == length-1) removeLast();
     else {
-      for (int i=0; i<pos; i++) {
+      for(int i = 0; i < pos - 1; i++) {
         cur = cur->getNext();
       }
       Node<T> *victim = cur->getNext();
@@ -212,19 +207,17 @@ public:
   }
 
   // AED023
-  void insert(int pos, const T & value) {
+  void insert(int pos, const T & v) {
     if (pos < 0 || pos > length) return;
-    if (pos == 0) {
-      addFirst(value);
-    } else if (pos == length) {
-      addLast(value);
-    } else {
+    else if (pos == 0) addFirst(v);
+    else if (pos == length) addLast(v);
+    else {
       Node<T> *cur = first;
       for (int i = 0; i < pos - 1; i++) {
         cur = cur->getNext();
       }
-      Node<T> *newNode = new Node<T>(value, cur->getNext());
-      cur->setNext(newNode);
+      Node<T> *added = new Node<T>(v, cur->getNext());
+      cur->setNext(added);
       length++;
     }
   }
@@ -233,11 +226,10 @@ public:
   void duplicate() {
     Node<T> *cur = first;
     while (cur != nullptr) {
-      T value = cur->getValue();
-      Node<T> *newNode = new Node<T>(value, cur->getNext());
-      cur->setNext(newNode);
+      Node<T> *added = new Node<T>(cur->getValue(), cur->getNext());
+      cur->setNext(added);
+      cur = added->getNext();
       length++;
-      cur = newNode->getNext();
     }
   }
 
