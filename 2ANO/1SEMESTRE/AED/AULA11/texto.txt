@@ -1,0 +1,53 @@
+  bool contains(const KeyType & k) {
+    // Calculate the bucket index using the hash function
+    int bucket = hash(k) % size;
+
+    // Check if the key exists in the bucket's list
+    for (const auto &key : table[bucket]) {
+      if (key == k) {
+        return true;
+      }
+    }
+
+    // Key not found
+    return false;
+  }
+
+  bool insert(const KeyType & k) {
+    // Calculate the bucket index using the hash function
+    int bucket = hash(k) % size;
+
+    // Check if the key already exists
+    if (contains(k)) {
+      return false; // Key already exists, insertion fails
+    }
+
+    // Insert the key at the end of the bucket's list
+    table[bucket].push_back(k);
+
+    // Increment the number of keys
+    numberKeys++;
+
+    return true; // Insertion successful
+  }
+
+  bool remove(const KeyType & k) {
+    // Calculate the bucket index using the hash function
+    int bucket = hash(k) % size;
+
+    // Find the key in the bucket's list
+    for (auto it = table[bucket].begin(); it != table[bucket].end(); ++it) {
+      if (*it == k) {
+        // Key found, remove it
+        table[bucket].erase(it);
+
+        // Decrement the number of keys
+        numberKeys--;
+
+        return true; // Removal successful
+      }
+    }
+
+    // Key not found, removal fails
+    return false;
+  }
