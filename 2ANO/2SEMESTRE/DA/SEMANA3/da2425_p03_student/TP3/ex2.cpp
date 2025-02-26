@@ -15,6 +15,7 @@ void dfsKruskalPath(Vertex<T> *v) {
 template <typename T>
 std::vector<Vertex<T> *> kruskal(Graph<T> *g) {
     // TODO
+    
     return g->getVertexSet();
 }
 

@@ -7,6 +7,35 @@
 template <typename T>
 std::vector<Vertex<T> *> prim(Graph<T> *g) {
     // TODO
+    for (auto x: g->getVertexSet()) {
+        x->setDist(INFINITY);
+        x->setPath(nullptr);
+        x->setVisited(false);
+    }
+
+    Vertex<T> *v = g->getVertex().front();
+    v->setDist(0);
+
+    MutablePriorityQueue<Vertex<T>> q;
+    q.insert(v);
+    while (!q.empty()) {
+        auto v = q.extractMin();
+        v->setVisited(true);
+        for (auto& edge: v->getAdj()) {
+            Vertex<T> *w = edge->getDest();
+            double weight = edge->getWeight();
+            if (!w->getVisited() && weight < w->getDist()) {
+                w->setDist(weight);
+                w->setPath(v);
+                if (q.has(w)) {
+                    q.decreaseKey(w);
+                } else {
+                    q.insert(w);
+                }
+            }
+        }
+    }
+
     return g->getVertexSet();
 }
 
